@@ -18,11 +18,10 @@ class StartOfWordsMatcher extends BaseMatcher
 
     /**
      * @param $searchString
-     *
      * @return string
      */
     public function formatSearchString($searchString)
     {
-        return implode('% ', explode(' ', $searchString)).'%';
+        return implode('% ', explode(' ', $searchString)) . '%';
     }
 }

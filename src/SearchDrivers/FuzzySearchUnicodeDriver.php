@@ -2,19 +2,28 @@
 
 namespace TomLingham\Searchy\SearchDrivers;
 
+use TomLingham\Searchy\Matchers\AcronymUnicodeMatcher;
+use TomLingham\Searchy\Matchers\ConsecutiveCharactersUnicodeMatcher;
+use TomLingham\Searchy\Matchers\ExactMatcher;
+use TomLingham\Searchy\Matchers\InStringMatcher;
+use TomLingham\Searchy\Matchers\StartOfStringMatcher;
+use TomLingham\Searchy\Matchers\StartOfWordsMatcher;
+use TomLingham\Searchy\Matchers\StudlyCaseUnicodeMatcher;
+use TomLingham\Searchy\Matchers\TimesInStringMatcher;
+
 class FuzzySearchUnicodeDriver extends BaseSearchDriver
 {
     /**
      * @var array
      */
     protected $matchers = [
-        \TomLingham\Searchy\Matchers\ExactMatcher::class                        => 100,
-        \TomLingham\Searchy\Matchers\StartOfStringMatcher::class                => 50,
-        \TomLingham\Searchy\Matchers\AcronymUnicodeMatcher::class               => 42,
-        \TomLingham\Searchy\Matchers\ConsecutiveCharactersUnicodeMatcher::class => 40,
-        \TomLingham\Searchy\Matchers\StartOfWordsMatcher::class                 => 35,
-        \TomLingham\Searchy\Matchers\StudlyCaseUnicodeMatcher::class            => 32,
-        \TomLingham\Searchy\Matchers\InStringMatcher::class                     => 30,
-        \TomLingham\Searchy\Matchers\TimesInStringMatcher::class                => 8,
-  ];
+        ExactMatcher::class                        => 100,
+        StartOfStringMatcher::class                => 50,
+        AcronymUnicodeMatcher::class               => 42,
+        ConsecutiveCharactersUnicodeMatcher::class => 40,
+        StartOfWordsMatcher::class                 => 35,
+        StudlyCaseUnicodeMatcher::class            => 32,
+        InStringMatcher::class                     => 30,
+        TimesInStringMatcher::class                => 8,
+    ];
 }

@@ -9,7 +9,6 @@ interface MatcherInterface
      *
      * @param $column
      * @param $searchString
-     *
      * @return mixed
      */
     public function buildQueryString($column, $searchString);

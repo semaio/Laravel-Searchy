@@ -14,7 +14,6 @@ class LevenshteinMatcher extends BaseMatcher
     /**
      * @param $column
      * @param $searchString
-     *
      * @return mixed|string
      */
     public function buildQueryString($column, $searchString)

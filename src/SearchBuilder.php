@@ -30,6 +30,11 @@ class SearchBuilder
      */
     private $config;
 
+    /**
+     * SearchBuilder constructor.
+     *
+     * @param Repository $config
+     */
     public function __construct(Repository $config)
     {
         $this->config = $config;
@@ -37,7 +42,6 @@ class SearchBuilder
 
     /**
      * @param $searchable
-     *
      * @return $this
      */
     public function search($searchable)
@@ -51,20 +55,19 @@ class SearchBuilder
     }
 
     /**
-     * @return FuzzySearchDriver
+     * @return mixed
      */
     public function fields(/* $fields */)
     {
         $args = func_get_args();
 
-        $this->searchFields = is_array( $args[0] ) ? $args[0] : $args;
+        $this->searchFields = is_array($args[0]) ? $args[0] : $args;
 
         return $this->makeDriver();
     }
 
     /**
      * @param $driverName
-     *
      * @return $this
      */
     public function driver($driverName)
@@ -77,7 +80,6 @@ class SearchBuilder
     /**
      * @param $table
      * @param $searchFields
-     *
      * @return mixed
      */
     public function __call($table, $searchFields)
@@ -92,19 +94,19 @@ class SearchBuilder
     {
         $relevanceFieldName = $this->config->get('searchy.fieldName');
 
-        // Check if default driver is being overridden, otherwise
-        // load the default
+        // Check if default driver is being overridden, otherwise load the default
         $driverName = $this->driverName ? $this->driverName : $this->config->get('searchy.default');
 
         // Gets the details for the selected driver from the configuration file
         $driver = $this->config->get("searchy.drivers.$driverName")['class'];
 
-        // Create a new instance of the selected drivers 'class' and pass
-        // through table and fields to search
-        $driverInstance = new $driver( $this->table,
-                                       $this->searchFields,
-                                       $relevanceFieldName,
-                                       ['*']);
+        // Create a new instance of the selected drivers 'class' and pass through table and fields to search
+        $driverInstance = new $driver(
+            $this->table,
+            $this->searchFields,
+            $relevanceFieldName,
+            ['*']
+        );
 
         return $driverInstance;
     }

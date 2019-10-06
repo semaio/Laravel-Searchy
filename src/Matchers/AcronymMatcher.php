@@ -18,13 +18,12 @@ class AcronymMatcher extends BaseMatcher
 
     /**
      * @param $searchString
-     *
-     * @return mixed|string
+     * @return string
      */
     public function formatSearchString($searchString)
     {
         $searchString = preg_replace('/[^0-9a-zA-Z]/', '', $searchString);
 
-        return implode('% ', str_split(strtoupper($searchString))).'%';
+        return implode('% ', str_split(strtoupper($searchString))) . '%';
     }
 }

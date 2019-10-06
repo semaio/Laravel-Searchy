@@ -18,14 +18,13 @@ class AcronymUnicodeMatcher extends BaseMatcher
 
     /**
      * @param $searchString
-     *
-     * @return mixed|string
+     * @return string
      */
     public function formatSearchString($searchString)
     {
         $results = [];
         preg_match_all('/./u', mb_strtoupper($searchString, 'UTF-8'), $results);
 
-        return implode('% ', $results[0]).'%';
+        return implode('% ', $results[0]) . '%';
     }
 }

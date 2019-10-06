@@ -10,8 +10,16 @@ use TomLingham\Searchy\Interfaces\MatcherInterface;
  */
 abstract class BaseMatcher implements MatcherInterface
 {
+    /**
+     * @var
+     */
     protected $multiplier;
 
+    /**
+     * BaseMatcher constructor.
+     *
+     * @param $multiplier
+     */
     public function __construct($multiplier)
     {
         $this->multiplier = $multiplier;
@@ -22,13 +30,13 @@ abstract class BaseMatcher implements MatcherInterface
      *
      * @param $column
      * @param $searchString
-     *
      * @return mixed|string
      */
     public function buildQueryString($column, $searchString)
     {
-        if (method_exists($this, 'formatSearchString'))
+        if (method_exists($this, 'formatSearchString')) {
             $searchString = $this->formatSearchString($searchString);
+        }
 
         return "IF($column {$this->operator} '$searchString', {$this->multiplier}, 0)";
     }

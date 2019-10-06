@@ -18,7 +18,6 @@ class StudlyCaseUnicodeMatcher extends BaseMatcher
 
     /**
      * @param $searchString
-     *
      * @return string
      */
     public function formatSearchString($searchString)
@@ -26,11 +25,16 @@ class StudlyCaseUnicodeMatcher extends BaseMatcher
         $results = [];
         preg_match_all('/./u', mb_strtoupper($searchString, 'UTF-8'), $results);
 
-        return implode('%', $results[0]).'%';
+        return implode('%', $results[0]) . '%';
     }
 
+    /**
+     * @param $column
+     * @param $searchString
+     * @return mixed|string
+     */
     public function buildQueryString($column, $searchString)
     {
-        return "IF( CHAR_LENGTH( TRIM( $column )) = CHAR_LENGTH( REPLACE( TRIM( $column ), ' ', '')) AND $column {$this->operator} '{$this->formatSearchString($searchString)}', {$this->multiplier}, 0)";
+        return "IF( CHAR_LENGTH( TRIM( $column )) = CHAR_LENGTH( REPLACE( TRIM( $column ), ' ', '')) AND $column {$this->operator} '{$this->formatSearchString($searchString)}', {$this->multiplier}, 0)"; // @codingStandardsIgnore
     }
 }

@@ -18,7 +18,6 @@ class InStringMatcher extends BaseMatcher
 
     /**
      * @param $searchString
-     *
      * @return string
      */
     public function formatSearchString($searchString)

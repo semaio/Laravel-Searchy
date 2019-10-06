@@ -18,18 +18,22 @@ class StudlyCaseMatcher extends BaseMatcher
 
     /**
      * @param $searchString
-     *
      * @return string
      */
     public function formatSearchString($searchString)
     {
         $searchString = preg_replace('/[^0-9a-zA-Z]/', '', $searchString);
 
-        return implode('%', str_split(strtoupper($searchString))).'%';
+        return implode('%', str_split(strtoupper($searchString))) . '%';
     }
 
+    /**
+     * @param $column
+     * @param $searchString
+     * @return mixed|string
+     */
     public function buildQueryString($column, $searchString)
     {
-        return "IF( CHAR_LENGTH( TRIM( $column )) = CHAR_LENGTH( REPLACE( TRIM( $column ), ' ', '')) AND $column {$this->operator} '{$this->formatSearchString($searchString)}', {$this->multiplier}, 0)";
+        return "IF( CHAR_LENGTH( TRIM( $column )) = CHAR_LENGTH( REPLACE( TRIM( $column ), ' ', '')) AND $column {$this->operator} '{$this->formatSearchString($searchString)}', {$this->multiplier}, 0)"; // @codingStandardsIgnore
     }
 }

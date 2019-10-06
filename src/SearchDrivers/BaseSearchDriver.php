@@ -2,41 +2,62 @@
 
 namespace TomLingham\Searchy\SearchDrivers;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use TomLingham\Searchy\Interfaces\SearchDriverInterface;
 
 abstract class BaseSearchDriver implements SearchDriverInterface
 {
+    /**
+     * @var
+     */
     protected $table;
 
+    /**
+     * @var array
+     */
     protected $columns;
 
+    /**
+     * @var array
+     */
     protected $searchFields;
 
+    /**
+     * @var
+     */
     protected $searchString;
 
+    /**
+     * @var string
+     */
     protected $relevanceFieldName;
 
+    /**
+     * @var
+     */
     protected $query;
 
-    protected $withTrashed;
+    /**
+     * @var bool
+     */
+    protected $withTrashed = false;
 
     /**
-     * @param null  $table
-     * @param array $searchFields
-     * @param $relevanceFieldName
-     * @param array $columns
+     * BaseSearchDriver constructor.
      *
-     * @internal param $relevanceField
+     * @param null   $table
+     * @param array  $searchFields
+     * @param string $relevanceFieldName
+     * @param array  $columns
      */
-    public function __construct($table = null, $searchFields = [], $relevanceFieldName, $columns = ['*'])
+    public function __construct($table = null, $searchFields = [], $relevanceFieldName = '', $columns = ['*'])
     {
         $this->searchFields = $searchFields;
         $this->table = $table;
         $this->columns = $columns;
         $this->relevanceFieldName = $relevanceFieldName;
     }
-
 
     /**
      * Specify whether to return soft deleted items or not
@@ -49,7 +70,6 @@ abstract class BaseSearchDriver implements SearchDriverInterface
 
         return $this;
     }
-
 
     /**
      * Specify which columns to return.
@@ -67,12 +87,11 @@ abstract class BaseSearchDriver implements SearchDriverInterface
      * Specify the string that is is being searched for.
      *
      * @param $searchString
-     *
      * @return \Illuminate\Database\Query\Builder|mixed|static
      */
     public function query($searchString)
     {
-        $this->searchString = substr(\DB::connection()->getPdo()->quote($searchString), 1, -1);
+        $this->searchString = substr(DB::connection()->getPdo()->quote($searchString), 1, -1);
 
         return $this;
     }
@@ -114,14 +133,15 @@ abstract class BaseSearchDriver implements SearchDriverInterface
      */
     protected function run()
     {
-        $this->query = \DB::table($this->table)
+        $this->query = DB::table($this->table)
             ->select($this->columns)
             ->addSelect($this->buildSelectQuery($this->searchFields));
 
         // If they included withTrashed flag then give them all records including soft deletes
         // Check to ensure the column exists before committing
-        if( ! $this->withTrashed && in_array('deleted_at', Schema::getColumnListing($this->table)) )
-            $this->query = $this->query->where('deleted_at', NULL);
+        if (!$this->withTrashed && in_array('deleted_at', Schema::getColumnListing($this->table))) {
+            $this->query = $this->query->where('deleted_at', null);
+        }
 
         return $this->query
             ->orderBy($this->relevanceFieldName, 'desc')
@@ -130,7 +150,6 @@ abstract class BaseSearchDriver implements SearchDriverInterface
 
     /**
      * @param array $searchFields
-     *
      * @return array|\Illuminate\Database\Query\Expression
      */
     protected function buildSelectQuery(array $searchFields)
@@ -139,8 +158,10 @@ abstract class BaseSearchDriver implements SearchDriverInterface
 
         foreach ($searchFields as $searchField) {
             if (strpos($searchField, '::')) {
-
-                $concatString = implode(', ', array_map( [$this, 'sanitizeColumnName'] , explode('::', $searchField)));
+                $concatString = implode(', ', array_map(
+                    [$this, 'sanitizeColumnName'],
+                    explode('::', $searchField)
+                ));
 
                 $query[] = $this->buildSelectCriteria("CONCAT({$concatString})");
             } else {
@@ -148,14 +169,13 @@ abstract class BaseSearchDriver implements SearchDriverInterface
             }
         }
 
-        return \DB::raw( implode(' + ', $query) . ' AS ' . $this->relevanceFieldName);
+        return DB::raw(implode(' + ', $query) . ' AS ' . $this->relevanceFieldName);
     }
-
 
     /**
      * Sanitize column names to prevent collisions with MySQL reserved words
      *
-     * @param $name
+     * @param string $name
      * @return string
      */
     protected function sanitizeColumnName($name)
@@ -165,16 +185,13 @@ abstract class BaseSearchDriver implements SearchDriverInterface
         return "`${name}`";
     }
 
-
     /**
      * @param null $searchField
-     *
      * @return string
      */
     protected function buildSelectCriteria($searchField = null)
     {
         $criteria = [];
-
         foreach ($this->matchers as $matcher => $multiplier) {
             $criteria[] = $this->makeMatcher($searchField, $matcher, $multiplier);
         }
@@ -186,7 +203,6 @@ abstract class BaseSearchDriver implements SearchDriverInterface
      * @param $searchField
      * @param $matcherClass
      * @param $multiplier
-     *
      * @return mixed
      */
     protected function makeMatcher($searchField, $matcherClass, $multiplier)
@@ -196,8 +212,12 @@ abstract class BaseSearchDriver implements SearchDriverInterface
         return $matcher->buildQueryString($this->coalesce($searchField), $this->searchString);
     }
 
+    /**
+     * @param string $field
+     * @return string
+     */
     private function coalesce($field)
     {
-      return "COALESCE($field, '')";
+        return "COALESCE($field, '')";
     }
 }
