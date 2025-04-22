@@ -182,7 +182,7 @@ abstract class BaseSearchDriver implements SearchDriverInterface
     {
         $name = str_replace('.', '`.`', trim($name, '` '));
 
-        return "`${name}`";
+        return "`{$name}`";
     }
 
     /**
